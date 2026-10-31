@@ -1,0 +1,284 @@
+{
+  "dataset_name": "keyword_case_retrieval_evaluation",
+  "version": "0.1",
+  "language": "fr",
+  "collection": "jurisprudence",
+  "corpus_snapshot": {
+    "source_database": "Backend/Collections/chroma.sqlite3",
+    "chunks": 12370,
+    "distinct_cases": 300,
+    "cases_with_nonempty_theme": 195,
+    "cases_without_theme": 105
+  },
+  "evaluation_unit": "affaire",
+  "result_deduplication_key": "source_id",
+  "relevance_definition": "Les source_id listés sont des labels provisoires inférés des thèmes indexés, pas des jugements humains définitifs.",
+  "instructions": [
+    "Avant de calculer les métriques finales, vérifier chaque affaire pertinente à partir de son texte et compléter les source_id pertinents manquants.",
+    "Un source_id absent de la liste n’est pas automatiquement non pertinent : les thèmes manquent pour certaines affaires.",
+    "Dédupliquer les chunks par source_id avant Precision@k, Recall@k, MRR et nDCG@k.",
+    "Les identifiants sont ceux de la collection ; les résultats par chunk doivent être regroupés au niveau source_id."
+  ],
+  "queries": [
+    {
+      "query_id": "q01",
+      "query": "Je cherche des affaires liées à la résiliation d’un contrat de travail.",
+      "relevant_source_ids": [
+        "6079b1c29ba5988459c533b0",
+        "6079b1c29ba5988459c533b3",
+        "6079b1c29ba5988459c533b5",
+        "6079b1c29ba5988459c533b7",
+        "6079b1c29ba5988459c533b8",
+        "6079b1c29ba5988459c533bc",
+        "6079b1c29ba5988459c533bd",
+        "6079b1c29ba5988459c533c0",
+        "6079b1c29ba5988459c533eb",
+        "6079b1c29ba5988459c533ee",
+        "6253c845bd3db21cbdd84c2f",
+        "6253c84abd3db21cbdd84ccd"
+      ],
+      "provisional_label_basis": {
+        "field": "themes",
+        "criterion": [
+          "contrat de travail",
+          "rupture OR licenciement OR resiliation OR congediement"
+        ]
+      },
+      "validation_status": "à vérifier manuellement"
+    },
+    {
+      "query_id": "q02",
+      "query": "Quelles décisions concernent un licenciement pour faute grave ?",
+      "relevant_source_ids": [
+        "6253c84abd3db21cbdd84ccd"
+      ],
+      "provisional_label_basis": {
+        "field": "themes",
+        "criterion": [
+          "licenciement",
+          "faute grave"
+        ]
+      },
+      "validation_status": "à vérifier manuellement"
+    },
+    {
+      "query_id": "q03",
+      "query": "Je cherche des jurisprudences sur la location d’un logement et le bail d’habitation.",
+      "relevant_source_ids": [
+        "6253c839bd3db21cbdd84a6d",
+        "6253c83cbd3db21cbdd84ace",
+        "6253c844bd3db21cbdd84be6",
+        "6253c845bd3db21cbdd84c33",
+        "6253c845bd3db21cbdd84c36",
+        "6253c84cbd3db21cbdd84d1d",
+        "6253c84cbd3db21cbdd84d21",
+        "6253c84cbd3db21cbdd84d26"
+      ],
+      "provisional_label_basis": {
+        "field": "themes",
+        "criterion": [
+          "bail a loyer"
+        ]
+      },
+      "validation_status": "à vérifier manuellement"
+    },
+    {
+      "query_id": "q04",
+      "query": "Quelles affaires portent sur la résiliation ou l’exécution d’un bail commercial ?",
+      "relevant_source_ids": [
+        "6079411c9ba5988459c406f0",
+        "6079d63f9ba5988459c5a041",
+        "6079d63f9ba5988459c5a046",
+        "6079d63f9ba5988459c5a047",
+        "6079d63f9ba5988459c5a04c",
+        "6079d63f9ba5988459c5a04f",
+        "6253c839bd3db21cbdd84a75",
+        "6253c83abd3db21cbdd84a7b",
+        "6253c844bd3db21cbdd84c08",
+        "6253c844bd3db21cbdd84c09",
+        "6253c844bd3db21cbdd84c0e",
+        "6253c845bd3db21cbdd84c29"
+      ],
+      "provisional_label_basis": {
+        "field": "themes",
+        "criterion": [
+          "bail commercial"
+        ]
+      },
+      "validation_status": "à vérifier manuellement"
+    },
+    {
+      "query_id": "q05",
+      "query": "Je recherche des litiges de transport de marchandises.",
+      "relevant_source_ids": [
+        "6253c844bd3db21cbdd84be0",
+        "6253c845bd3db21cbdd84c3a",
+        "6253c84cbd3db21cbdd84d25"
+      ],
+      "provisional_label_basis": {
+        "field": "themes",
+        "criterion": [
+          "transport",
+          "marchandises",
+          "contrat"
+        ]
+      },
+      "validation_status": "à vérifier manuellement"
+    },
+    {
+      "query_id": "q06",
+      "query": "Quelles décisions traitent de la responsabilité d’un professionnel de santé ?",
+      "relevant_source_ids": [
+        "6253c844bd3db21cbdd84be1",
+        "6253c84cbd3db21cbdd84d22"
+      ],
+      "provisional_label_basis": {
+        "field": "themes",
+        "criterion": [
+          "responsabilite",
+          "professions medicales OR medecin"
+        ]
+      },
+      "validation_status": "à vérifier manuellement"
+    },
+    {
+      "query_id": "q07",
+      "query": "Je cherche des décisions sur le surendettement des particuliers.",
+      "relevant_source_ids": [
+        "6253c84cbd3db21cbdd84d1c"
+      ],
+      "provisional_label_basis": {
+        "field": "themes",
+        "criterion": [
+          "surendettement"
+        ]
+      },
+      "validation_status": "à vérifier manuellement"
+    },
+    {
+      "query_id": "q08",
+      "query": "Quelles affaires concernent le divorce et la pension alimentaire ?",
+      "relevant_source_ids": [
+        "6079411b9ba5988459c4065a",
+        "6253c839bd3db21cbdd84a79"
+      ],
+      "provisional_label_basis": {
+        "field": "themes",
+        "criterion": [
+          "divorce",
+          "pension alimentaire"
+        ]
+      },
+      "validation_status": "à vérifier manuellement"
+    },
+    {
+      "query_id": "q09",
+      "query": "Je recherche des litiges relatifs au cautionnement.",
+      "relevant_source_ids": [
+        "6253c839bd3db21cbdd84a6a",
+        "6253c845bd3db21cbdd84c38",
+        "6253c84cbd3db21cbdd84d2c"
+      ],
+      "provisional_label_basis": {
+        "field": "themes",
+        "criterion": [
+          "cautionnement"
+        ]
+      },
+      "validation_status": "à vérifier manuellement"
+    },
+    {
+      "query_id": "q10",
+      "query": "Quelles décisions concernent la preuve par témoignage ?",
+      "relevant_source_ids": [
+        "6253c839bd3db21cbdd84a73",
+        "6253c83cbd3db21cbdd84ac5",
+        "6253c83cbd3db21cbdd84aca"
+      ],
+      "provisional_label_basis": {
+        "field": "themes",
+        "criterion": [
+          "preuve testimoniale"
+        ]
+      },
+      "validation_status": "à vérifier manuellement"
+    },
+    {
+      "query_id": "q11",
+      "query": "Je cherche des affaires portant sur une saisie ou une mesure d’exécution forcée.",
+      "relevant_source_ids": [
+        "6253c84abd3db21cbdd84ccc",
+        "6253c84cbd3db21cbdd84d20"
+      ],
+      "provisional_label_basis": {
+        "field": "themes",
+        "criterion": [
+          "saisie",
+          "execution OR remunerations"
+        ]
+      },
+      "validation_status": "à vérifier manuellement"
+    },
+    {
+      "query_id": "q12",
+      "query": "Quelles décisions concernent le retour d’un enfant après un enlèvement international ?",
+      "relevant_source_ids": [
+        "6253c839bd3db21cbdd84a70",
+        "6253c844bd3db21cbdd84bed"
+      ],
+      "provisional_label_basis": {
+        "field": "themes",
+        "criterion": [
+          "convention de la haye",
+          "enfant"
+        ]
+      },
+      "validation_status": "à vérifier manuellement"
+    },
+    {
+      "query_id": "q13",
+      "query": "Je recherche des affaires sur la fin du contrat d’un agent commercial.",
+      "relevant_source_ids": [
+        "6253c844bd3db21cbdd84be2"
+      ],
+      "provisional_label_basis": {
+        "field": "themes",
+        "criterion": [
+          "agent commercial",
+          "fin OR contrat"
+        ]
+      },
+      "validation_status": "à vérifier manuellement"
+    },
+    {
+      "query_id": "q14",
+      "query": "Quelles jurisprudences portent sur une clause compromissoire ?",
+      "relevant_source_ids": [
+        "6253c84cbd3db21cbdd84d27"
+      ],
+      "provisional_label_basis": {
+        "field": "themes",
+        "criterion": [
+          "clause compromissoire"
+        ]
+      },
+      "validation_status": "à vérifier manuellement"
+    },
+    {
+      "query_id": "q15",
+      "query": "Je cherche des décisions concernant la propriété intellectuelle et les œuvres de l’esprit.",
+      "relevant_source_ids": [
+        "6253c844bd3db21cbdd84bdf",
+        "6253c845bd3db21cbdd84c39",
+        "6253c84cbd3db21cbdd84d23"
+      ],
+      "provisional_label_basis": {
+        "field": "themes",
+        "criterion": [
+          "propriete litteraire et artistique"
+        ]
+      },
+      "validation_status": "à vérifier manuellement"
+    }
+  ]
+}
