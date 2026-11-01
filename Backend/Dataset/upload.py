@@ -53,3 +53,15 @@ async def get_data(
     except requests.RequestException as e:
         print(f"Erreur lors de la requête HTTP : {e}")
         raise
+
+async def create_data():
+    cour_d_appel = await get_data(juridication="cour_d_appel", length=100)
+    tribunal_judiciaire = await get_data(juridication="tribunal_judiciaire", length=100)
+    cour_de_cassation = await get_data(juridication="cour_de_cassation", length=100)
+    data = pd.concat(
+    [cour_d_appel, tribunal_judiciaire, cour_de_cassation],
+    ignore_index=True
+    )
+
+    return data
+
