@@ -27,11 +27,12 @@ def _route_request(state: ResearchState) -> dict[str, Any]:
         raise ValueError("ResearchState must contain a non-empty user_message")
 
     class RoutingDecision(BaseModel):
-        intent: Literal["search_cases", "ask_question"] = Field(
+        intent: Literal["search_cases", "ask_question", "chat"] = Field(
             description=(
                 "search_cases pour trouver des affaires sur un sujet; "
                 "ask_question pour répondre à une question sur les affaires "
-                "déjà sélectionnées dans la session"
+                "déjà sélectionnées dans la session; chat pour les salutations, "
+                "remerciements et messages généraux qui ne demandent pas de recherche"
             )
         )
 
@@ -42,11 +43,17 @@ def _route_request(state: ResearchState) -> dict[str, Any]:
                 "system",
                 "Tu es le routeur d'un système de recherche en jurisprudence. "
                 "Choisis une seule intention :\n"
-                "- search_cases si le message demande de trouver, rechercher ou lister "
-                "des affaires sur un sujet.\n"
-                "- ask_question si le message pose une question sur les affaires déjà "
-                "sélectionnées dans la session.\n"
-                "Si aucune affaire n'est sélectionnée, choisis search_cases. "
+                "- search_cases uniquement si l'utilisateur demande explicitement de "
+                "trouver, rechercher ou lister des affaires de jurisprudence.\n"
+                "- ask_question si le message demande des informations sur les affaires "
+                "déjà sélectionnées dans la session.\n"
+                "- chat pour une salutation (par exemple « bonjour »), un remerciement, "
+                "une conversation générale ou une demande qui ne sollicite pas la recherche "
+                "d'affaires.\n"
+                "N'oriente jamais une simple salutation ou conversation générale vers "
+                "search_cases. Si aucune affaire n'est sélectionnée, n'utilise pas "
+                "ask_question; choisis search_cases seulement si des affaires sont "
+                "explicitement demandées, sinon chat. "
                 "N'explique pas ton raisonnement; retourne uniquement la décision structurée.\n\n"
                 "{format_instructions}",
             ),
@@ -70,13 +77,22 @@ def _route_request(state: ResearchState) -> dict[str, Any]:
         return {
             "route": "qa",
             "user_question": user_message,
+            "chat_response": "",
             "workflow_status": "answering_question",
+        }
+
+    if decision.intent in ("chat", "ask_question"):
+        return {
+            "route": "chat",
+            "chat_response": "",
+            "workflow_status": "chatting",
         }
 
     return {
         "route": "research",
         "query": user_message,
         "user_question": "",
+        "chat_response": "",
         "retrieved_cases": [],
         "research": {},
         "selected_cases": [],
@@ -109,13 +125,50 @@ def _run_qa(state: ResearchState) -> dict[str, Any]:
     result = qa_agent(state)
     return {
         **result,
+        "chat_response": "",
         "workflow_status": "question_answered",
+    }
+
+
+def _run_chat(state: ResearchState) -> dict[str, Any]:
+    from langchain_core.prompts import ChatPromptTemplate
+
+    from Common.llm import get_llm
+
+    user_message = state.get("user_message")
+    if user_message is None or not user_message.strip():
+        raise ValueError("ResearchState must contain a non-empty user_message")
+
+    prompt = ChatPromptTemplate.from_messages(
+        [
+            (
+                "system",
+                "Tu es un assistant conversationnel spécialisé dans la recherche "
+                "de jurisprudence française. Réponds naturellement et brièvement aux "
+                "salutations et messages généraux. Explique en une phrase que tu peux "
+                "aider à trouver des affaires ou répondre sur les affaires déjà "
+                "sélectionnées. Ne lance pas de recherche et n'invente pas de références "
+                "juridiques. Si l'utilisateur cherche des affaires, invite-le à préciser "
+                "sa demande.",
+            ),
+            ("human", "{user_message}"),
+        ]
+    )
+    response = (prompt | get_llm(temperature=0)).invoke(
+        {"user_message": user_message}
+    )
+    content = response.content
+    if not isinstance(content, str) or not content.strip():
+        raise ValueError("The chat model returned an empty response")
+    return {
+        "chat_response": content.strip(),
+        "workflow_status": "chat_answered",
     }
 
 
 def _route_after_monitoring(state: ResearchState) -> str:
     route = state.get("route")
-    if route not in ("research", "qa"):
+    if route not in ("research", "qa", "chat"):
         raise ValueError(f"Monitoring selected an unsupported route: {route}")
     return route
 
@@ -132,6 +185,7 @@ def get_monitoring_graph():
     graph.add_node("research", _run_research)
     graph.add_node("retrieval", _run_retrieval)
     graph.add_node("qa", _run_qa)
+    graph.add_node("chat", _run_chat)
 
     graph.add_edge(START, "monitoring")
     graph.add_conditional_edges(
@@ -140,6 +194,7 @@ def get_monitoring_graph():
         {
             "research": "research",
             "qa": "qa",
+            "chat": "chat",
         },
     )
     graph.add_conditional_edges(
@@ -152,6 +207,7 @@ def get_monitoring_graph():
     )
     graph.add_edge("retrieval", END)
     graph.add_edge("qa", END)
+    graph.add_edge("chat", END)
     return graph.compile()
 
 

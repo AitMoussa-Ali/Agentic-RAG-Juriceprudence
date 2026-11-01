@@ -3,7 +3,7 @@
 /* -------------------------------------------------------------------------- */
 
 export type RetrievalMethod = "TF-IDF" | "BM25" | "Semantic" | "Hybrid";
-export type AgentRoute = "research" | "qa";
+export type AgentRoute = "research" | "qa" | "chat";
 
 /** Every key is optional: the state is filled progressively while the agent runs. */
 export interface AgentState {
@@ -21,6 +21,7 @@ export interface AgentState {
   user_question?: string;
   qa_answer?: string;
   qa_sources?: Record<string, unknown>[];
+  chat_response?: string;
 }
 
 /** Runtime list of the state keys, used to recognise state patches in the stream. */
@@ -39,6 +40,7 @@ export const AGENT_STATE_KEYS: ReadonlyArray<keyof AgentState> = [
   "user_question",
   "qa_answer",
   "qa_sources",
+  "chat_response",
 ];
 
 /* -------------------------------------------------------------------------- */
