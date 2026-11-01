@@ -1,0 +1,15 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: jurisprudence-agentic-rag:local
+    env_file:
+      - ./Backend/.env
+    environment:
+      FRONTEND_ORIGINS: http://localhost:8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./Backend/Collections:/app/Collections
+    restart: unless-stopped
