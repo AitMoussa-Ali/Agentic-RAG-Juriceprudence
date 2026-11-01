@@ -100,10 +100,14 @@ TF-IDF  300 / 140             0.1200        0.5417     0.4361
 TF-IDF  500 / 240             0.1267        0.5750     0.4527
 ```
 
+![Keyword retrieval benchmark: BM25 and TF-IDF across chunk configurations](Backend/Evaluation/plots/keyword_benchmark.png)
+
 The semantic evaluation varied `n_results` across 100, 300, 500, and 700 chunks. For the
 300 / 140 collection, `n_results=100` scored Precision@10 0.0200, Recall@10 0.0944, and
 nDCG@10 0.0531; at 300, the corresponding values were 0.0133, 0.0278, and 0.0355. Increasing
 the number of candidates did not consistently improve the measured results.
+
+![Semantic retrieval benchmark: Precision, Recall, and nDCG at 10 by candidate depth](Backend/Evaluation/plots/semantic_benchmark.png)
 
 The hybrid notebook evaluated 15 queries with `top_k=10`, `n_results=100`, and RRF `k=60`:
 
@@ -112,6 +116,8 @@ Method                     Precision@10  Recall@10  nDCG@10  MRR@10
 TF-IDF + semantic with RRF 0.0400        0.2278     0.1496   0.1433
 BM25 + semantic with RRF   0.0400        0.2278     0.1690   0.1895
 ```
+
+![Hybrid benchmark: TF-IDF plus semantic compared with BM25 plus semantic using RRF](Backend/Evaluation/plots/hybrid_benchmark.png)
 
 The current application uses the `jurisprudence_chunk_300_overlap_140` collection,
 `top_k=10` for initial retrieval, `n_results=100`, and RRF `k=60`. Retrieval then reranks
@@ -236,3 +242,30 @@ Example request body:
 
 Supported methods are `Hybrid`, `BM25`, `Semantic`, and `TF-IDF`. If `selected_method` is
 omitted, Hybrid is used.
+
+## Code map and references
+
+Backend:
+
+- [Backend overview and local API instructions](Backend/README.md)
+- [FastAPI application entry point](Backend/main.py)
+- [LangGraph monitoring and router](Backend/Agents/Monitoring_agent.py)
+- [Research agent and retrieval fallback](Backend/Agents/Research_agent.py)
+- [Case reranking node](Backend/Agents/Retreival_agent.py)
+- [Question answering node](Backend/Agents/QA_agent.py)
+- [API controllers](Backend/Controllers/)
+- [API routes](Backend/Routes/)
+- [Keyword retrieval implementation](Backend/Retreival/KeywordSearch.py)
+- [Hybrid retrieval implementation](Backend/Retreival/HybridSearch.py)
+- [Keyword benchmark notebook](Backend/Evaluation/Keyword_evaluation.ipynb)
+- [Semantic benchmark notebook](Backend/Evaluation/Semantic_evaluation.ipynb)
+- [Hybrid retrieval notebook](Backend/Retreival/HybridSearch.ipynb)
+- [Generated benchmark plots](Backend/Evaluation/plots/)
+
+Frontend:
+
+- [Frontend application](Frontend/frontend/)
+- [Chat interface and progress display](Frontend/frontend/src/Layout/Layoutpage.tsx)
+- [Frontend API client and SSE parser](Frontend/frontend/src/services/api.ts)
+- [Chat and agent state types](Frontend/frontend/src/types/chat.ts)
+- [Frontend package scripts](Frontend/frontend/package.json)
