@@ -94,6 +94,8 @@ function buildSteps(state: AgentState, streamedText: string, phase: Phase): Agen
           ? "Question sur les affaires retenues"
           : state.route === "research"
             ? "Recherche d'affaires"
+            : state.route === "chat"
+              ? "Conversation générale"
             : undefined,
     },
   ];
@@ -113,6 +115,13 @@ function buildSteps(state: AgentState, streamedText: string, phase: Phase): Agen
         detail: !state.qa_answer && streamedText ? "Rédaction en cours…" : undefined,
       },
     );
+  } else if (state.route === "chat") {
+    defs.push({
+      id: "chat",
+      label: "Réponse",
+      done: !!state.chat_response,
+      detail: !state.chat_response && streamedText ? "Rédaction en cours…" : undefined,
+    });
   } else if (state.route === "research") {
     const queryDetail = [
       state.query ? `« ${truncate(state.query, 80)} »` : undefined,
@@ -173,6 +182,13 @@ function buildReply(state: AgentState, streamed: string): Message {
   };
 
   const answer = (state.qa_answer ?? streamed).trim();
+
+  if (state.route === "chat") {
+    return {
+      ...base,
+      text: (state.chat_response ?? "").trim() || "Bonjour ! Comment puis-je vous aider ?",
+    };
+  }
 
   // Question about the retained cases.
   if (state.route === "qa" || (answer && !state.retrieved_cases && !state.selected_cases)) {

@@ -34,7 +34,9 @@ Example request body:
 
 Each message response is `text/event-stream`. Events are named `progress`, `completed`, or
 `error`; their `data` is JSON. Progress events expose the current step, retrieval method,
-fallback status, selected cases, or QA citations. Internal LLM reasoning is not sent to clients.
+fallback status, selected cases, conversational response, or QA citations. Greetings and other
+messages that do not request a case search are handled as conversation and do not start retrieval.
+Internal LLM reasoning is not sent to clients.
 
 Example browser call (the POST stream is consumed with `fetch`, not native `EventSource`):
 

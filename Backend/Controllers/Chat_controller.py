@@ -19,6 +19,7 @@ ProgressStage = Literal[
     "research",
     "retrieval",
     "qa",
+    "chat",
     "completed",
     "error",
 ]
@@ -51,6 +52,7 @@ class SessionResponse(BaseModel):
     research: dict[str, Any] = Field(default_factory=dict)
     qa_answer: str = ""
     qa_sources: list[dict[str, Any]] = Field(default_factory=list)
+    chat_response: str = ""
 
 
 class SessionNotFoundError(Exception):
@@ -97,6 +99,7 @@ class ChatController:
                 research=state.get("research", {}),
                 qa_answer=state.get("qa_answer", ""),
                 qa_sources=state.get("qa_sources", []),
+                chat_response=state.get("chat_response", ""),
             )
 
     def delete_session(self, session_id: str) -> None:
@@ -248,6 +251,14 @@ class ChatController:
                 "sources": node_update.get("qa_sources", []),
             }
 
+        if node_name == "chat":
+            return "progress", {
+                "stage": "chat",
+                "status": node_update.get("workflow_status"),
+                "message": "Réponse conversationnelle prête.",
+                "answer": node_update.get("chat_response", ""),
+            }
+
         logger.warning("Received progress update from unknown graph node: %s", node_name)
         return "progress", {
             "stage": "monitoring",
@@ -263,6 +274,7 @@ class ChatController:
             "selected_cases": state.get("selected_cases", []),
             "qa_answer": state.get("qa_answer", ""),
             "qa_sources": state.get("qa_sources", []),
+            "chat_response": state.get("chat_response", ""),
         }
 
     @staticmethod

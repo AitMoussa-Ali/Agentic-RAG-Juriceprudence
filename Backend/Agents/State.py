@@ -1,7 +1,7 @@
 from typing import Any, Literal, TypedDict
 
 RetrievalMethod = Literal["TF-IDF", "BM25", "Semantic", "Hybrid"]
-AgentRoute = Literal["research", "qa"]
+AgentRoute = Literal["research", "qa", "chat"]
 
 
 class ResearchState(TypedDict, total=False):
@@ -19,3 +19,4 @@ class ResearchState(TypedDict, total=False):
     user_question: str
     qa_answer: str
     qa_sources: list[dict[str, Any]]
+    chat_response: str
